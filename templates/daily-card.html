@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h3>{{card[0]['name']}}</h3>
+    <p>DESCRIPTION: {{card[0]['desc']}}</p>
+    <p>UPRIGHT MEANING: {{card[0]['meaning_up']}}</p>
+    <p>REVERSED MEANING: {{card[0]['meaning_rev']}}</p>
+    <p>TYPE: {{card[0]['type']}}</p>
+    <p>NAME SHORT: {{card[0]['name_short']}}</p>
+    <p>VALUE: {{card[0]['value']}}</p>
+    <p>INT VALUE: {{card[0]['value_int']}}</p>
+    <p>SUIT: {{card[0]['suit']}}</p>
+    
+    <img src={{ image_url }}>
+{% endblock %}

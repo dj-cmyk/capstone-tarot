@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form id="daily-card-form" action="/get-daily-card" method="GET">
+        <button class="btn btn-secondary">Get Daily Card</button>
+    </form>
+
+
+    <!-- <div class="card mb-3">
+        <h3 class="card-header">{{ today }}</h3>
+        <div class="card-body">
+            {% if g.user.id.cards.timestamp contains today %}
+          <h5 class="card-title">{% todays card %}</h5>
+          {% else %}
+          <h5 class="card-title">Pick a Card for Today</h5>
+        </div>
+        
+        <div class="card-body">
+          <p class="card-text">
+                <form id="daily-card-form" action="/get-daily-card" method="GET">
+                    <button class="btn btn-secondary">Get Daily Card</button>
+                </form>
+            </p>
+        </div>
+      </div> -->
+
+      <!-- <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Card title</h4>
+          <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="card-link">Card link</a>
+          <a href="#" class="card-link">Another link</a>
+        </div>
+      </div> -->
+{% endblock %}

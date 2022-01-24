@@ -2,15 +2,84 @@
 
 {% block content %}
 
-    <h3>{{card[0]['name']}}</h3>
-    <p>DESCRIPTION: {{card[0]['desc']}}</p>
-    <p>UPRIGHT MEANING: {{card[0]['meaning_up']}}</p>
-    <p>REVERSED MEANING: {{card[0]['meaning_rev']}}</p>
-    <p>TYPE: {{card[0]['type']}}</p>
-    <p>NAME SHORT: {{card[0]['name_short']}}</p>
-    <p>VALUE: {{card[0]['value']}}</p>
-    <p>INT VALUE: {{card[0]['value_int']}}</p>
-    <p>SUIT: {{card[0]['suit']}}</p>
-    
+<div class="display-cards container d-flex flex-row flex-wrap">
+<div class="card-meanings col-sm order-2 cards">
+<div class="accordion" id="card-meaning">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            <strong>{{card[0]['name']}}</strong>
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <strong>Description: </strong> {{card[0]['desc']}}
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Upright Meaning
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          {{card[0]['meaning_up']}}
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingThree">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            Reversed Meaning
+        </button>
+      </h2>
+      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          {{card[0]['meaning_rev']}}
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingFour">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+              Suit
+          </button>
+        </h2>
+        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+              {% if card[0]['suit'] %}
+            {{card[0]['suit']}}
+            {% else %}
+            {{card[0]['type']}}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+<div class="card-image col-sm order-1 cards">
+    <h3 id="card-title">{{card[0]['name']}}</h3>
     <img src={{ image_url }}>
+</div>
+
+<div class="card-notes col-sm order-3 cards">
+    <form method="POST" id="notes_form">
+        {{ form.hidden_tag() }}
+
+        {% for field in form if field.widget.input_type != 'hidden' %}
+          {% for error in field.errors %}
+            <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+          {{ field(placeholder=field.label.text, class="form-control") }}
+        {% endfor %}
+
+        <button class="btn btn-primary btn-block btn-lg">Save Card and Add Notes</button>
+      </form>
+</div>
+
+</div>
+      
 {% endblock %}

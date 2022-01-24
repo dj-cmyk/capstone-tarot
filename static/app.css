@@ -1,0 +1,12 @@
+.cards {
+    padding: 15px;
+    margin: 15px;
+}
+
+#card-title {
+    text-align: center;
+}
+
+#notes {
+    height: 500px;
+}

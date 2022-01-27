@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form id="daily-card-form" action="/get-daily-card" method="GET">
+        <button class="btn btn-secondary">Get Daily Card</button>
+    </form>
+
+    {% for card in cards %}
+    <div class="card mb-3 col-sm cards">
+        <h3 class="card-header">{{ card.timestamp }}</h3>
+        <div class="card-body">
+            <h3 id="card-title">{{ card.card_name_long }}</h3>
+            <img src="static/cards/{{card.card_name}}.jpg">
+        </div>
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted">Notes</h6>
+            <p class="card-text">{{ card.notes }}</p>
+          </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}

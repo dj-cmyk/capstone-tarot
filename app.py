@@ -1,18 +1,16 @@
+from sqlite3 import Timestamp
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 import requests
-# from sqlalchemy import desc
+from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
 from datetime import date
 # import os
 # from werkzeug.utils import secure_filename
 
 from forms import NotesForm, UserAddForm, LoginForm
-from models import db, connect_db, User, Note, Card
+from models import db, connect_db, User, Card
 
-
-CURR_USER_KEY = "curr_user"
-today = date.today()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///tarot_app_db'
@@ -20,12 +18,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = 'secretANDrandom101010'
 
-# app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # 8MB max-limit.
 
 # debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
+CURR_USER_KEY = "curr_user"
 API_BASE_URL = "https://rws-cards-api.herokuapp.com/api/v1/cards"
 
 # ***********************************************************************************
@@ -35,45 +33,67 @@ API_BASE_URL = "https://rws-cards-api.herokuapp.com/api/v1/cards"
 @app.route('/')
 def display_homepage():
     '''docstring'''
-    return render_template('home.html', today=today)
+    return redirect('/login')
 
     
 
 @app.route('/get-daily-card', methods=["GET", "POST"])
 def get_card():
-    
+    '''docstring'''
+
     # if user not logged in, this shouldn't work and redirect to login page
-
-    # if a card has already been selected + saved for today, this should redirect to user home page with daily/weekly/monthly overview
-
-
-    resp = requests.get(f"{API_BASE_URL}/random?n=1")
-    data = resp.json()
-    card = data['cards']
-    image_url = f"static/cards/{card[0]['name_short']}.jpg"
-
-    form = NotesForm()
-
-    if form.validate_on_submit():
-        note = Note(
-            text=form.notes.data,
-            user_id=g.user.id
-        )
-        card = Card(
-            card_name = card[0]['name_short'],
-            user_id = g.user.id
-        )
-
-        db.session.add(note)
-        db.session.add(card)
-        db.session.commit()
-
-        return redirect("/")
+    if not g.user:
+        return redirect('/login')
 
     else:
-        return render_template('daily-card.html', card=card, image_url=image_url, today=today, form=form)
+        # if a card has already been selected + saved for today, this should redirect to dashboard
+        if Card.query.filter(
+            Card.user_id == g.user.id, 
+            Card.timestamp == date.today()).all():
+            flash("Card for Today already chosen, come back tomorrow", 'warning')
+            return redirect('/dashboard')
+
+        else:
+            resp = requests.get(f"{API_BASE_URL}/random?n=1")
+            data = resp.json()
+            card = data['cards']
+            ref_card = card[0]['name_short']
+            image_url = f"static/cards/{ref_card}.jpg"
+            today = date.today()
+            # this is not working because it's saving the card to the DB and then not letting me add notes to it due to it already being in the db, but when I try to add it after typing the notes, it is selecting a different random card and adding that to the db instead. I think I need to add to the db when I submit the form with the notes and do all of it together but I don't know how to get it so it doesn't pick another card from the api - how do i save the state of the card basically?
+            new_card = Card(
+                    card_name = ref_card,
+                    card_name_long = card[0]['name'],
+                    user_id = g.user.id, 
+                )
+            db.session.add(new_card)
+            db.session.commit()
 
 
+            form = NotesForm()
+
+            if form.validate_on_submit():
+                new_card.notes = form.notes.data
+                db.session.commit()
+                return redirect("/dashboard")
+
+            else:
+                return render_template('daily-card.html', card=card, image_url=image_url, today=today, form=form)
+
+
+@app.route('/dashboard')
+def show_dashboard():
+    '''docstring'''
+    if not g.user:
+        return redirect('/login')
+    else:
+        user_id = g.user.id
+        today = date.today()
+
+        cards = Card.query.filter_by(user_id = user_id).order_by(Card.timestamp.desc())
+        
+
+        return render_template('dashboard.html', today=today, cards=cards)
 
 ##############################################################################
 # User signup/login/logout
@@ -123,7 +143,6 @@ def signup():
                 username=form.username.data,
                 password=form.password.data,
                 email=form.email.data,
-                image_url=form.image_url.data or User.image_url.default.arg,
             )
             db.session.commit()
 
@@ -133,7 +152,7 @@ def signup():
 
         do_login(user)
 
-        return redirect("/")
+        return redirect("/dashboard")
 
     else:
         return render_template('signup.html', form=form)
@@ -152,7 +171,7 @@ def login():
         if user:
             do_login(user)
             flash(f"Hello, {user.username}!", "success")
-            return redirect("/")
+            return redirect("/dashboard")
 
         flash("Invalid credentials.", 'danger')
 

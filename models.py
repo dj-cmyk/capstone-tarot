@@ -1,6 +1,6 @@
 """SQLAlchemy models for Tarot App DB."""
 
-from datetime import datetime
+from datetime import date
 
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
@@ -31,17 +31,10 @@ class User(db.Model):
         unique=True,
     )
 
-    image_url = db.Column(
-        db.Text,
-        default="/static/images/default-pic.png",
-    )
-
     password = db.Column(
         db.Text,
         nullable=False,
     )
-
-    notes = db.relationship('Note')
 
     cards = db.relationship('Card')
 
@@ -50,7 +43,7 @@ class User(db.Model):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 
     @classmethod
-    def signup(cls, username, email, password, image_url):
+    def signup(cls, username, email, password):
         """Sign up user.
 
         Hashes password and adds user to system.
@@ -62,7 +55,6 @@ class User(db.Model):
             username=username,
             email=email,
             password=hashed_pwd,
-            image_url=image_url,
         )
 
         db.session.add(user)
@@ -89,34 +81,6 @@ class User(db.Model):
         return False
 
 
-class Note(db.Model):
-    """A users notes on individual cards"""
-
-    __tablename__ = 'notes'
-
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-    )
-
-    text = db.Column(
-        db.Text,
-        nullable=False,
-    )
-
-    timestamp = db.Column(
-        db.DateTime,
-        nullable=False,
-        default=datetime.utcnow(),
-    )
-
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('users.id', ondelete='CASCADE'),
-        nullable=False,
-    )
-
-    user = db.relationship('User')
 
 
 class Card(db.Model):
@@ -134,10 +98,19 @@ class Card(db.Model):
         nullable=False,
     )
 
+    card_name_long = db.Column(
+        db.String(100),
+        nullable=False,
+    )
+
+    notes = db.Column(
+        db.Text,
+    )
+
     timestamp = db.Column(
         db.DateTime,
         nullable=False,
-        default=datetime.utcnow(),
+        default=date.today(),
     )
 
     user_id = db.Column(

@@ -10,3 +10,7 @@
 #notes {
     height: 500px;
 }
+
+.nav-username {
+    list-style-type: none;
+}

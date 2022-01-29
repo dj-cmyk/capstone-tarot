@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>{{ card_notes.card_name_long }} from {{ card_notes.timestamp.strftime("%d %B, %Y") }}</h3>
+
+<div class="card-notes col-sm cards">
+    <form method="POST" id="notes_form">
+        {{ form.hidden_tag() }}
+
+        {% for field in form if field.widget.input_type != 'hidden' %}
+          {% for error in field.errors %}
+            <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+          {{ field(placeholder=field.label.text, class="form-control") }}
+        {% endfor %}
+
+        <button class="btn btn-primary btn-block btn-lg">Update Notes</button>
+      </form>
+</div>
+
+{% endblock %}

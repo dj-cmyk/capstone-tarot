@@ -1,23 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+    {% if not picked %}
     <form id="daily-card-form" action="/get-daily-card" method="GET">
         <button class="btn btn-secondary">Get Daily Card</button>
     </form>
-
+    {% endif %}
+    <div class="row container card-dashboard d-flex flex-wrap justify-content-md-center">
     {% for card in cards %}
-    <div class="card mb-3 col-sm cards">
-        <h3 class="card-header">{{ card.timestamp }}</h3>
-        <div class="card-body">
+    <div class="card mb-3 col-lg-3 cards">
+        <h3 class="card-header">{{ card.timestamp.strftime("%d %B, %Y") }}</h3>
+        <div class="card-image col-sm">
             <h3 id="card-title">{{ card.card_name_long }}</h3>
-            <img src="static/cards/{{card.card_name}}.jpg">
+            <img class="d-block mx-auto" width="100%" src="static/cards/{{card.card_name}}.jpg">
         </div>
         <div class="card-body">
             <h6 class="card-subtitle mb-2 text-muted">Notes</h6>
             <p class="card-text">{{ card.notes }}</p>
           </div>
+        <div class="card-body">
+            <a href="/notes/{{ card.id }}" class="btn btn-sm btn-secondary">Edit Notes</a>
+            <a href="/cards/{{ card.id }}" class="btn btn-sm btn-secondary">View Card Meanings</a>
+        </div>
     </div>
     {% endfor %}
-
+    </div>
 {% endblock %}

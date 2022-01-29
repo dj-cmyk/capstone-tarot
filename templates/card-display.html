@@ -2,18 +2,18 @@
 
 {% block content %}
 
-<div class="display-cards container d-flex flex-row flex-wrap">
+<div class="display-cards container">
 <div class="card-meanings col-sm order-2 cards">
 <div class="accordion" id="card-meaning">
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingOne">
         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-            <strong>{{card[0]['name']}}</strong>
+            <strong>{{card['name']}}</strong>
         </button>
       </h2>
       <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
         <div class="accordion-body">
-          <strong>Description: </strong> {{card[0]['desc']}}
+          <strong>Description: </strong> {{card['desc']}}
         </div>
       </div>
     </div>
@@ -25,7 +25,7 @@
       </h2>
       <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
         <div class="accordion-body">
-          {{card[0]['meaning_up']}}
+          {{card['meaning_up']}}
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@
       </h2>
       <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
         <div class="accordion-body">
-          {{card[0]['meaning_rev']}}
+          {{card['meaning_rev']}}
         </div>
       </div>
     </div>
@@ -49,10 +49,10 @@
         </h2>
         <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
           <div class="accordion-body">
-              {% if card[0]['suit'] %}
-            {{card[0]['suit']}}
+              {% if card['suit'] %}
+            {{card['suit']}}
             {% else %}
-            {{card[0]['type']}}
+            {{card['type']}}
             {% endif %}
           </div>
         </div>
@@ -60,15 +60,6 @@
   </div>
 </div>
 
-<div class="card-image col-sm order-1 cards">
-    <h3 id="card-title">{{card[0]['name']}}</h3>
-    <img src={{ image_url }}>
+<a href="/dashboard" class="btn btn-lg btn-secondary">Back</a>
 </div>
-
-<div class="card-notes col-sm order-3 cards">
-    <a href="/notes/{{ new_card.id }}" class="btn btn-primary btn-block btn-lg">Add Notes for Today's Card</a>
-</div>
-
-</div>
-      
 {% endblock %}

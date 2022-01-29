@@ -59,8 +59,9 @@ def get_card():
             card = data['cards']
             ref_card = card[0]['name_short']
             image_url = f"static/cards/{ref_card}.jpg"
-            today = date.today()
-            # this is not working because it's saving the card to the DB and then not letting me add notes to it due to it already being in the db, but when I try to add it after typing the notes, it is selecting a different random card and adding that to the db instead. I think I need to add to the db when I submit the form with the notes and do all of it together but I don't know how to get it so it doesn't pick another card from the api - how do i save the state of the card basically?
+            date_today = date.today()
+            today = date_today.strftime("%d %B, %Y")
+            
             new_card = Card(
                     card_name = ref_card,
                     card_name_long = card[0]['name'],
@@ -69,16 +70,32 @@ def get_card():
             db.session.add(new_card)
             db.session.commit()
 
+            return render_template('daily-card.html', card=card, image_url=image_url, today=today, new_card=new_card)
 
-            form = NotesForm()
 
-            if form.validate_on_submit():
-                new_card.notes = form.notes.data
-                db.session.commit()
-                return redirect("/dashboard")
+@app.route('/notes/<int:card_id>', methods=['GET', 'POST'])
+def edit_notes(card_id):
+    '''docstring'''
+    card_notes = Card.query.get_or_404(card_id)
+    form = NotesForm(obj=card_notes)
+    if form.validate_on_submit():
+        card_notes.notes = request.form.get("notes", card_notes.notes)
+        db.session.commit()
 
-            else:
-                return render_template('daily-card.html', card=card, image_url=image_url, today=today, form=form)
+        return redirect("/dashboard")
+    else:
+        return render_template('edit-notes.html', form=form, card_notes=card_notes)
+
+
+@app.route('/cards/<int:card_id>')
+def display_card_meanings(card_id):
+    '''docstring'''
+    single_card = Card.query.get_or_404(card_id)
+    card_name = single_card.card_name
+    resp = requests.get(f"{API_BASE_URL}/{card_name}")
+    data = resp.json()
+    card = data['card']
+    return render_template('card-display.html', card=card)
 
 
 @app.route('/dashboard')
@@ -88,12 +105,16 @@ def show_dashboard():
         return redirect('/login')
     else:
         user_id = g.user.id
-        today = date.today()
+        date_today = date.today()
+        today = date_today.strftime("%d %B, %Y")
 
         cards = Card.query.filter_by(user_id = user_id).order_by(Card.timestamp.desc())
+        picked = [card.id for card in cards if card.timestamp != date_today]
         
 
-        return render_template('dashboard.html', today=today, cards=cards)
+        return render_template('dashboard.html', today=today, cards=cards, picked=picked)
+
+
 
 ##############################################################################
 # User signup/login/logout

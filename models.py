@@ -84,7 +84,7 @@ class User(db.Model):
 
 
 class Card(db.Model):
-    """A users daily card"""
+    """A users daily card and notes"""
 
     __tablename__ = 'cards'
 

@@ -1,12 +1,10 @@
-from sqlite3 import Timestamp
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 import requests
 from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
 from datetime import date
-# import os
-# from werkzeug.utils import secure_filename
+
 
 from forms import NotesForm, UserAddForm, LoginForm
 from models import db, connect_db, User, Card
@@ -32,14 +30,14 @@ API_BASE_URL = "https://rws-cards-api.herokuapp.com/api/v1/cards"
 
 @app.route('/')
 def display_homepage():
-    '''docstring'''
+    '''slash route redirects to login page for now'''
     return redirect('/login')
 
     
 
 @app.route('/get-daily-card', methods=["GET", "POST"])
 def get_card():
-    '''docstring'''
+    '''check for logged in user, check for daily card already chosen, call API to get new card for the day, record that card in db'''
 
     # if user not logged in, this shouldn't work and redirect to login page
     if not g.user:
@@ -75,7 +73,7 @@ def get_card():
 
 @app.route('/notes/<int:card_id>', methods=['GET', 'POST'])
 def edit_notes(card_id):
-    '''docstring'''
+    '''update the notes for a specific user and specific card in db'''
     card_notes = Card.query.get_or_404(card_id)
     form = NotesForm(obj=card_notes)
     if form.validate_on_submit():
@@ -89,7 +87,7 @@ def edit_notes(card_id):
 
 @app.route('/cards/<int:card_id>')
 def display_card_meanings(card_id):
-    '''docstring'''
+    '''get card name from db, call API to get and then display card description, meanings, and suit for specified card'''
     single_card = Card.query.get_or_404(card_id)
     card_name = single_card.card_name
     resp = requests.get(f"{API_BASE_URL}/{card_name}")
@@ -100,7 +98,7 @@ def display_card_meanings(card_id):
 
 @app.route('/dashboard')
 def show_dashboard():
-    '''docstring'''
+    '''user dashboard - shows history of cards picked and notes taken for each one, button to choose a new card for the day if not already done'''
     if not g.user:
         return redirect('/login')
     else:
@@ -109,10 +107,8 @@ def show_dashboard():
         today = date_today.strftime("%d %B, %Y")
 
         cards = Card.query.filter_by(user_id = user_id).order_by(Card.timestamp.desc())
-        picked = [card.id for card in cards if card.timestamp != date_today]
-        
 
-        return render_template('dashboard.html', today=today, cards=cards, picked=picked)
+        return render_template('dashboard.html', today=today, cards=cards)
 
 
 

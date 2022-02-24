@@ -1,5 +1,6 @@
+import os
 from flask import Flask, render_template, request, flash, redirect, session, g
-from flask_debugtoolbar import DebugToolbarExtension
+# from flask_debugtoolbar import DebugToolbarExtension
 import requests
 from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
@@ -11,7 +12,9 @@ from models import db, connect_db, User, Card
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///tarot_app_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    os.environ.get('DATABASE_URL', 'postgresql:///tarot_app_db'))
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = 'secretANDrandom101010'
@@ -64,6 +67,7 @@ def get_card():
                     card_name = ref_card,
                     card_name_long = card[0]['name'],
                     user_id = g.user.id, 
+                    timestamp = date_today,
                 )
             db.session.add(new_card)
             db.session.commit()

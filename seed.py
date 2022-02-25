@@ -1,10 +1,8 @@
-from models import db, connect_db, User, Card
-from app import app
+from app import db
+from models import User, Card
 
 
-connect_db(app)
-
-
+db.drop_all()
 db.create_all()
 
 

@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, flash, redirect, session, g
-# from flask_debugtoolbar import DebugToolbarExtension
+
 import requests
 from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
@@ -19,8 +19,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = 'secretANDrandom101010'
 
-
-# debug = DebugToolbarExtension(app)
 
 connect_db(app)
 

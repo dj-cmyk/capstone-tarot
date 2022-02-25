@@ -1,5 +1,17 @@
-from models import Card, db
+from models import User, Card, db
 from app import app
+
+
+db.drop_all()
+db.create_all()
+
+
+
+user1 = User(username="sampleuser", email="sampleemail@sample.email.com", password="samplepassword1")
+
+db.session.add(user1)
+db.session.commit()
+
 
 card1 = Card(card_name='cuac', card_name_long='Ace of Cups', notes="notes on ace of cups", timestamp='2022-01-28 00:00:00', user_id=1)
 card2 = Card(card_name='cu02', card_name_long='Two of Cups', notes="notes on two of cups", timestamp='2022-01-26 00:00:00', user_id=1)

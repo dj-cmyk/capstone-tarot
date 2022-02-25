@@ -119,7 +119,7 @@ class Card(db.Model):
         nullable=False,
     )
 
-    user = db.relationship('User')
+    
 
 
 def connect_db(app):

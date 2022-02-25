@@ -17,7 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
-app.config['SECRET_KEY'] = 'secretANDrandom101010'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'shh')
 
 
 connect_db(app)

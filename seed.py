@@ -1,5 +1,5 @@
-from app import db
-from models import User, Card
+from app import app
+from models import db, User, Card
 
 
 db.drop_all()
